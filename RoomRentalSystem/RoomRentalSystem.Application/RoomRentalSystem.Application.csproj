@@ -7,9 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Entities\" />
-    <Folder Include="Exception\" />
-    <Folder Include="IRepositories\" />
+    <Folder Include="DTOs\" />
+    <Folder Include="Services\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RoomRentalSystem.Domain\RoomRentalSystem.Domain.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35707.178 d17.12
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{7410DB18-CF52-4325-BCB6-7D59BC3D6850}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{FC8D4F5E-C2B3-4D81-9908-62E6CD13FA34}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{96D6CFA3-CC3B-47C4-9598-C8430BF0819F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoomRentalSystem.Domain", "RoomRentalSystem.Domain\RoomRentalSystem.Domain.csproj", "{DFFC7487-2D98-4F22-87CF-29105A8C0565}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoomRentalSystem.Application", "RoomRentalSystem.Application\RoomRentalSystem.Application.csproj", "{05246A23-A726-48BF-B22A-192F2BAC1304}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoomRentalSystem.Persistence", "RoomRentalSystem.Persistence\RoomRentalSystem.Persistence.csproj", "{81A3813C-43E8-4F55-A556-02C4C36035DA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoomRentalSystem.WebApi", "RoomRentalSystem.WebApi\RoomRentalSystem.WebApi.csproj", "{28148CC0-3CC0-4C72-9B0F-C846EA72B332}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DFFC7487-2D98-4F22-87CF-29105A8C0565}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFFC7487-2D98-4F22-87CF-29105A8C0565}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFFC7487-2D98-4F22-87CF-29105A8C0565}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFFC7487-2D98-4F22-87CF-29105A8C0565}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05246A23-A726-48BF-B22A-192F2BAC1304}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05246A23-A726-48BF-B22A-192F2BAC1304}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05246A23-A726-48BF-B22A-192F2BAC1304}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05246A23-A726-48BF-B22A-192F2BAC1304}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81A3813C-43E8-4F55-A556-02C4C36035DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81A3813C-43E8-4F55-A556-02C4C36035DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81A3813C-43E8-4F55-A556-02C4C36035DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81A3813C-43E8-4F55-A556-02C4C36035DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28148CC0-3CC0-4C72-9B0F-C846EA72B332}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28148CC0-3CC0-4C72-9B0F-C846EA72B332}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28148CC0-3CC0-4C72-9B0F-C846EA72B332}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28148CC0-3CC0-4C72-9B0F-C846EA72B332}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{DFFC7487-2D98-4F22-87CF-29105A8C0565} = {7410DB18-CF52-4325-BCB6-7D59BC3D6850}
+		{05246A23-A726-48BF-B22A-192F2BAC1304} = {7410DB18-CF52-4325-BCB6-7D59BC3D6850}
+		{81A3813C-43E8-4F55-A556-02C4C36035DA} = {FC8D4F5E-C2B3-4D81-9908-62E6CD13FA34}
+		{28148CC0-3CC0-4C72-9B0F-C846EA72B332} = {96D6CFA3-CC3B-47C4-9598-C8430BF0819F}
+	EndGlobalSection
+EndGlobal

@@ -1,6 +1,6 @@
-﻿namespace RoomRentalSystem.Domain.Entities
+﻿namespace RoomRentalSystem.Domain.Constants
 {
-    public class RoleNames
+    public static class RoleNames
     {
         public const string Guest = "Guest";
         public const string Owner = "Owner";
