@@ -49,7 +49,7 @@ namespace RoomRentalSystem.Domain.Entities
             UserRoles.Add(UserRole.Create(this, role));
         }
 
-        private static bool IsValidEmail(string email) => 
+        private static bool IsValidEmail(string email) =>
             !(string.IsNullOrWhiteSpace(email)) && (IsMatch(email, RegularExpressionsForValidation.Email));
         private static bool IsValidPhoneNumber(string phoneNumber) =>
             !(string.IsNullOrWhiteSpace(phoneNumber)) && (IsMatch(phoneNumber, RegularExpressionsForValidation.PhoneNumber));
