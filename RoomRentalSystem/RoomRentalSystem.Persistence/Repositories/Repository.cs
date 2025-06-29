@@ -9,7 +9,7 @@ namespace RoomRentalSystem.Persistence.Repositories
 {
     public class Repository<T>(AppDbContext appDbContext) : IRepository<T> where T: BaseEntity
     {
-        private readonly AppDbContext _appDbContext = appDbContext;
+        public readonly AppDbContext _appDbContext = appDbContext;
         private readonly DbSet<T> _dbSet = appDbContext.Set<T>();
 
         public async Task<T> GetByIdAsync(Guid id)
