@@ -13,8 +13,11 @@ namespace RoomRentalSystem.Application.Services
         public async Task<UserDto> GetUserByIdAsync(Guid id)
         {
             var user = await _userRepository.GetByIdAsync(id);
+
             if (user == null)
+            {
                 throw new ApplicationException("User not found");
+            }
 
             return MapToDto(user);
         }
@@ -28,7 +31,9 @@ namespace RoomRentalSystem.Application.Services
         public async Task<UserDto> CreateUserAsync(CreateUserDto userDto)
         {
             if (await _userRepository.ExistsByEmailAsync(userDto.Email))
+            {
                 throw new ApplicationException("User with this email already exists");
+            }
 
             var user = User.Create(
                 userDto.PhoneNumber,
@@ -40,7 +45,9 @@ namespace RoomRentalSystem.Application.Services
             {
                 var role = await _roleRepository.GetByNameAsync(roleName);
                 if (role == null)
+                {
                     throw new ApplicationException($"Role '{roleName}' not found");
+                }
 
                 user.AddRole(role);
             }
