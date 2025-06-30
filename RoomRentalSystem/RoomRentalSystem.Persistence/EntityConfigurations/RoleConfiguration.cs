@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 using RoomRentalSystem.Domain.Entities;
-using RoomRentalSystem.Persistence.Converters;
 
 namespace RoomRentalSystem.Persistence.EntityConfigurations
 {
@@ -9,13 +8,14 @@ namespace RoomRentalSystem.Persistence.EntityConfigurations
     {
         public void Configure(EntityTypeBuilder<Role> builder)
         {
-            builder.HasKey(x => x.Id);
+            builder.HasKey(r => r.Id);
 
-            builder.Property(x => x.Name)
-                .IsRequired();
+            builder.Property(r => r.Name)
+                .IsRequired()
+                .HasMaxLength(50);
 
-            builder.HasIndex(x => x.Name)
-                .IsUnique();
+            builder.HasMany(r => r.Users)
+                .WithMany(u => u.Roles);
         }
     }
 }

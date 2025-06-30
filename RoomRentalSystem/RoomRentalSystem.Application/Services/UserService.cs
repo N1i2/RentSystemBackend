@@ -1,31 +1,32 @@
-﻿using RoomRentalSystem.Application.DTOs;
-using RoomRentalSystem.Application.Interfaces;
+﻿using Mapster;
+using RoomRentalSystem.Application.DTOs;
+using RoomRentalSystem.Application.Services.Interfaces;
 using RoomRentalSystem.Domain.Entities;
+using RoomRentalSystem.Domain.IRepositories;
 using ApplicationException = RoomRentalSystem.Application.Exceptions.ApplicationException;
 
 namespace RoomRentalSystem.Application.Services
 {
-    public class UserService(IUserRepository userRepository, IRoleRepository roleRepository) : IUserService
+    public class UserService(
+        IUserRepository userRepository,
+        IRoleRepository roleRepository,
+        IPasswordHasher passwordHasher) : IUserService
     {
         private readonly IUserRepository _userRepository = userRepository;
         private readonly IRoleRepository _roleRepository = roleRepository;
+        private readonly IPasswordHasher _passwordHasher = passwordHasher;
 
         public async Task<UserDto> GetUserByIdAsync(Guid id)
         {
             var user = await _userRepository.GetByIdAsync(id);
-
-            if (user == null)
-            {
-                throw new ApplicationException("User not found");
-            }
-
-            return MapToDto(user);
+            return user?.Adapt<UserDto>()
+                   ?? throw new ApplicationException("User not found");
         }
 
         public async Task<List<UserDto>> GetAllUsersAsync()
         {
             var users = await _userRepository.GetAllAsync();
-            return users.Select(MapToDto).ToList();
+            return users.Adapt<List<UserDto>>();
         }
 
         public async Task<UserDto> CreateUserAsync(CreateUserDto userDto)
@@ -35,26 +36,21 @@ namespace RoomRentalSystem.Application.Services
                 throw new ApplicationException("User with this email already exists");
             }
 
+            foreach (var roleName in userDto.Roles)
+            {
+                var role = _roleRepository.GetByNameAsync(roleName.Name);
+                if (role == null)
+                    throw new ApplicationException($"Role '{roleName}' not found");
+            }
+
             var user = User.Create(
                 userDto.PhoneNumber,
                 userDto.Email,
-                HashPassword(userDto.Password)
-            );
-
-            foreach (var roleName in userDto.Roles)
-            {
-                var role = await _roleRepository.GetByNameAsync(roleName);
-                if (role == null)
-                {
-                    throw new ApplicationException($"Role '{roleName}' not found");
-                }
-
-                user.AddRole(role);
-            }
+                _passwordHasher.HashPassword(userDto.Password),
+                userDto.Roles);
 
             await _userRepository.AddAsync(user);
-
-            return MapToDto(user);
+            return user.Adapt<UserDto>();
         }
 
         public Task<UserDto> UpdateUserAsync(UserDto userDto)
@@ -66,19 +62,5 @@ namespace RoomRentalSystem.Application.Services
         {
             throw new NotImplementedException();
         }
-
-        private static UserDto MapToDto(User user)
-        {
-            return new UserDto
-            {
-                Id = user.Id,
-                PhoneNumber = user.PhoneNumber,
-                Email = user.Email,
-                Roles = user.UserRoles.Select(ur => ur.Role.Name).ToList()
-            };
-        }
-
-        private static string HashPassword(string password)
-            => BCrypt.Net.BCrypt.HashPassword(password);
     }
 }

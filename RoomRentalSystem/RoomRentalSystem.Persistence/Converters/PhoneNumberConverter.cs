@@ -9,7 +9,7 @@ namespace RoomRentalSystem.Persistence.Converters
     {
         public static string ValidatePhoneNumber(string phoneNumber)
         {
-            if (!IsMatch(phoneNumber, RegularExpressionsForValidation.PhoneNumber))
+            if (!IsMatch(phoneNumber, RegularExpressionsForValidation.BelarusPhoneNumberValidationPattern))
             {
                 throw new PersistenceException("Incorrect phone number");
             }

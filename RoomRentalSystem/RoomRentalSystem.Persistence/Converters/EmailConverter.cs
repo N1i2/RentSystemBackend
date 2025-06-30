@@ -9,7 +9,7 @@ namespace RoomRentalSystem.Persistence.Converters
     {
         private static string ValidateEmail(string email)
         {
-            if (!IsMatch(email, RegularExpressionsForValidation.Email))
+            if (!IsMatch(email, RegularExpressionsForValidation.EmailValidationPattern))
             {
                 throw new PersistenceException("Incorrect email");
             }

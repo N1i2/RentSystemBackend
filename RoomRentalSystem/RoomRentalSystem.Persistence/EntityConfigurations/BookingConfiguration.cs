@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using RoomRentalSystem.Domain.Constants;
 using RoomRentalSystem.Domain.Entities;
 
 namespace RoomRentalSystem.Persistence.EntityConfigurations
@@ -8,19 +9,29 @@ namespace RoomRentalSystem.Persistence.EntityConfigurations
     {
         public void Configure(EntityTypeBuilder<Booking> builder)
         {
-            builder.HasKey(x => x.Id);
+            builder.HasKey(b => b.Id);
 
-            builder.Property(x => x.UserId)
+            builder.Property(b => b.StartDate)
                 .IsRequired();
 
-            builder.Property(x => x.Status)
-                .IsRequired()
-                .HasMaxLength(50);
+            builder.Property(b => b.EndDate)
+                .IsRequired();
 
-            builder.Property(x => x.TotalPrice)
+            builder.Property(b => b.TotalPrice)
                 .IsRequired()
-                .HasColumnType("decimal(18,2)")
-                .HasAnnotation("CheckConstraint", "Price >= 0"); ;
+                .HasColumnType("decimal(18,2)");
+
+            builder.Property(b => b.Status)
+                .IsRequired()
+                .HasConversion<string>()
+                .HasMaxLength(20)
+                .HasDefaultValue(RoomRentalStatus.Pending);
+
+            builder.HasIndex(b => b.UserId);
+            builder.HasIndex(b => b.RoomId);
+            builder.HasIndex(b => b.StartDate);
+            builder.HasIndex(b => b.EndDate);
+            builder.HasIndex(b => b.Status);
         }
     }
 }

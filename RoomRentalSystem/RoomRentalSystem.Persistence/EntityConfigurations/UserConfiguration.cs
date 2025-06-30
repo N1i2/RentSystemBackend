@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 using RoomRentalSystem.Domain.Entities;
-using RoomRentalSystem.Persistence.Converters;
+using RoomRentalSystem.Domain.ValidationRules;
 
 namespace RoomRentalSystem.Persistence.EntityConfigurations
 {
@@ -9,25 +9,41 @@ namespace RoomRentalSystem.Persistence.EntityConfigurations
     {
         public void Configure(EntityTypeBuilder<User> builder)
         {
-            builder.HasKey(x => x.Id);
+            builder.HasKey(u => u.Id);
 
-            builder.Property(x => x.PhoneNumber)
+            builder.Property(u => u.PhoneNumber)
                 .IsRequired()
-                .HasConversion(new PhoneNumberConverter());
+                .HasMaxLength(20)
+                .HasAnnotation("RegularExpression", RegularExpressionsForValidation.BelarusPhoneNumberValidationPattern);
 
-            builder.Property(x => x.Email)
+            builder.Property(u => u.Email)
                 .IsRequired()
-                .HasConversion(new EmailConverter());
+                .HasMaxLength(100)
+                .HasAnnotation("RegularExpression", RegularExpressionsForValidation.EmailValidationPattern);
 
-            builder.Property(x => x.PasswordHash)
+            builder.Property(u => u.PasswordHash)
                 .IsRequired()
-                .HasMaxLength(500);
+                .HasMaxLength(255);
 
-            builder.HasIndex(x => x.PhoneNumber)
-                .IsUnique();
+            builder.HasMany(u => u.Roles)
+                .WithMany(r => r.Users)
+                .UsingEntity(j => j.ToTable("UserRoles"));
 
-            builder.HasIndex(x => x.Email)
-                .IsUnique();
+            builder.HasMany(u => u.Rooms)
+                .WithOne(r => r.User)
+                .HasForeignKey(r => r.UserId);
+
+            builder.HasMany(u => u.FavoriteRooms)
+                .WithMany()
+                .UsingEntity(j => j.ToTable("UserFavoriteRooms"));
+
+            builder.HasMany(u => u.Comparisons)
+                .WithMany()
+                .UsingEntity(j => j.ToTable("UserRoomComparisons"));
+
+            builder.HasMany(u => u.Bookings)
+                .WithOne(b => b.User)
+                .HasForeignKey(b => b.UserId);
         }
     }
 }
