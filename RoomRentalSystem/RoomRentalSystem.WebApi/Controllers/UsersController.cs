@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RoomRentalSystem.Application.DTOs;
-using RoomRentalSystem.Application.Interfaces;
+using RoomRentalSystem.Application.Services.Interfaces;
 
 [ApiController]
 [Route("api/[controller]")]

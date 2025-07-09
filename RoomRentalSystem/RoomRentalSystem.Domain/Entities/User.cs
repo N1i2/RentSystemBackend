@@ -6,52 +6,55 @@ namespace RoomRentalSystem.Domain.Entities
 {
     public class User : BaseEntity
     {
-        private User() { }
-
         public string PhoneNumber { get; private set; }
         public string Email { get; private set; }
         public string PasswordHash { get; private set; }
-        public List<UserRole> UserRoles { get; private set; } = [];
+        public Guid ImageId { get; private set; }
+        public Image Image { get; private set; }
+        public ICollection<Role> Roles { get; private set; } = [];
+        public ICollection<Room> Rooms { get; private set; } = [];
+        public ICollection<Review> Reviews { get; private set; } = [];
+        public ICollection<Booking> Bookings { get; private set; } = [];
 
-        public static User Create(
+        private User() { }
+
+        public static User? Create(
             string phoneNumber,
             string email,
-            string passwordHash)
+            string passwordHash,
+            ICollection<Role> roles)
         {
             if (!IsValidPhoneNumber(phoneNumber))
             {
-                throw new DomainException("Incorrect phone number.");
+                throw new DomainException(nameof(phoneNumber));
             }
             if (!IsValidEmail(email))
             {
-                throw new DomainException("Incorrect email.");
+                throw new DomainException(nameof(email));
             }
             if (string.IsNullOrWhiteSpace(passwordHash))
             {
-                throw new DomainException("Incorrect password.");
+                throw new DomainException(nameof(passwordHash));
+            }
+
+            var rolesArray = roles ?? [];
+            if (!rolesArray.Any())
+            {
+                throw new DomainException(nameof(roles));
             }
 
             return new User
             {
                 PasswordHash = passwordHash,
                 PhoneNumber = phoneNumber,
-                Email = email
+                Email = email,
+                Roles = rolesArray
             };
         }
 
-        public void AddRole(Role role)
-        {
-            if (role == null)
-            {
-                throw new DomainException("Incorrect role.");
-            }
-
-            UserRoles.Add(UserRole.Create(this, role));
-        }
-
         private static bool IsValidEmail(string email) =>
-            !(string.IsNullOrWhiteSpace(email)) && (IsMatch(email, RegularExpressionsForValidation.Email));
+            !string.IsNullOrWhiteSpace(email) && IsMatch(email, RegularExpressionsForValidation.EmailValidationPattern);
         private static bool IsValidPhoneNumber(string phoneNumber) =>
-            !(string.IsNullOrWhiteSpace(phoneNumber)) && (IsMatch(phoneNumber, RegularExpressionsForValidation.PhoneNumber));
+            !string.IsNullOrWhiteSpace(phoneNumber) && IsMatch(phoneNumber, RegularExpressionsForValidation.BelarusPhoneNumberValidationPattern);
     }
 }

@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using RoomRentalSystem.Domain.Entities;
 using RoomRentalSystem.Persistence.Converters;
 
@@ -7,27 +7,52 @@ namespace RoomRentalSystem.Persistence.EntityConfigurations
 {
     public class UserConfiguration : IEntityTypeConfiguration<User>
     {
+        private const int PhoneNumberMaxLength = 20;
+        private const int EmailMaxLength = 100;
+        private const int PasswordHashMaxLength = 256;
+
         public void Configure(EntityTypeBuilder<User> builder)
         {
-            builder.HasKey(x => x.Id);
+            builder.HasKey(u => u.Id);
 
-            builder.Property(x => x.PhoneNumber)
+            builder.Property(u => u.PhoneNumber)
                 .IsRequired()
-                .HasConversion(new PhoneNumberConverter());
+                .HasMaxLength(PhoneNumberMaxLength)
+                .HasConversion<PhoneNumberConverter>()
+                .HasConversion(
+                    v => v,
+                    v => v.Trim());
 
-            builder.Property(x => x.Email)
+            builder.Property(u => u.Email)
                 .IsRequired()
-                .HasConversion(new EmailConverter());
+                .HasMaxLength(EmailMaxLength)
+                .HasConversion<EmailConverter>()
+                .HasConversion(
+                    v => v,
+                    v => v.Trim().ToLower());
 
-            builder.Property(x => x.PasswordHash)
+            builder.Property(u => u.PasswordHash)
                 .IsRequired()
-                .HasMaxLength(500);
+                .HasMaxLength(PasswordHashMaxLength);
 
-            builder.HasIndex(x => x.PhoneNumber)
-                .IsUnique();
+            builder.HasOne(u => u.Image)
+                .WithOne()
+                .HasForeignKey<User>(u => u.ImageId)
+                .OnDelete(DeleteBehavior.SetNull);
 
-            builder.HasIndex(x => x.Email)
-                .IsUnique();
+            builder.HasMany(u => u.Roles)
+                .WithMany(r => r.Users)
+                .UsingEntity(j => j.ToTable("UserRoles"));
+
+            builder.HasMany(u => u.Rooms)
+                .WithOne(r => r.User)
+                .HasForeignKey(r => r.UserId);
+
+            builder.HasMany(u => u.Bookings)
+                .WithOne(b => b.User)
+                .HasForeignKey(b => b.UserId);
+
+            builder.ToTable("Users");
         }
     }
 }

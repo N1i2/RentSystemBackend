@@ -1,6 +1,6 @@
 ﻿using RoomRentalSystem.Application.DTOs;
 
-namespace RoomRentalSystem.Application.Interfaces
+namespace RoomRentalSystem.Application.Services.Interfaces
 {
     public interface IUserService
     {
