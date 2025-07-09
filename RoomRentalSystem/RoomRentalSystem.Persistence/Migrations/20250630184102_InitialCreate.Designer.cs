@@ -5,13 +5,13 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using RoomRentalSystem.Persistence;
+using RoomRentalSystem.Persistence.DependencyInjection;
 
 #nullable disable
 
 namespace RoomRentalSystem.Persistence.Migrations
 {
-    [DbContext(typeof(ConfigureDependencyInjection))]
+    [DbContext(typeof(InfrastructureServiceRegistration))]
     [Migration("20250630184102_InitialCreate")]
     partial class InitialCreate
     {

@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RoomRentalSystem.Domain.Entities;
+using RoomRentalSystem.Persistence.DependencyInjection;
 using RoomRentalSystem.Persistence.Exceptions;
 
 namespace RoomRentalSystem.Persistence.Repositories
 {
-    public class UserRepository(ConfigureDependencyInjection context) : Repository<User>(context), IUserRepository
+    public class UserRepository(InfrastructureServiceRegistration context) : BaseRepository<User>(context), IUserRepository
     {
         public async Task<User> GetByEmailAsync(string email)
         {

@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using RoomRentalSystem.Persistence;
+using RoomRentalSystem.Persistence.DependencyInjection;
 
 #nullable disable
 
 namespace RoomRentalSystem.Persistence.Migrations
 {
-    [DbContext(typeof(ConfigureDependencyInjection))]
+    [DbContext(typeof(InfrastructureServiceRegistration))]
     partial class ConfigureDependencyInjectionModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

@@ -1,6 +1,7 @@
 ﻿using Mapster;
 using RoomRentalSystem.Application.DTOs;
 using RoomRentalSystem.Application.Services.Interfaces;
+using RoomRentalSystem.Domain.Constants;
 using RoomRentalSystem.Domain.Entities;
 using RoomRentalSystem.Domain.IRepositories;
 using ApplicationException = RoomRentalSystem.Application.Exceptions.ApplicationException;
@@ -19,8 +20,7 @@ namespace RoomRentalSystem.Application.Services
         public async Task<UserDto> GetUserByIdAsync(Guid id)
         {
             var user = await _userRepository.GetByIdAsync(id);
-            return user?.Adapt<UserDto>()
-                   ?? throw new ApplicationException("User not found");
+            return user.Adapt<UserDto>();
         }
 
         public async Task<List<UserDto>> GetAllUsersAsync()
@@ -36,18 +36,22 @@ namespace RoomRentalSystem.Application.Services
                 throw new ApplicationException("User with this email already exists");
             }
 
-            foreach (var roleName in userDto.Roles)
+            var roles = new List<Role>();
+            foreach (var roleId in userDto.RoleIds)
             {
-                var role = _roleRepository.GetByNameAsync(roleName.Name);
+                var role = await _roleRepository.GetByIdAsync(roleId);
                 if (role == null)
-                    throw new ApplicationException($"Role '{roleName}' not found");
+                {
+                    throw new ApplicationException($"Role with ID '{roleId}' not found");
+                }
+                roles.Add(role);
             }
 
             var user = User.Create(
                 userDto.PhoneNumber,
                 userDto.Email,
                 _passwordHasher.HashPassword(userDto.Password),
-                userDto.Roles);
+                roles);
 
             await _userRepository.AddAsync(user);
             return user.Adapt<UserDto>();

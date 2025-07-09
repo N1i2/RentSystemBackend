@@ -1,12 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using RoomRentalSystem.Domain.Constants;
 using RoomRentalSystem.Domain.Entities;
 
 namespace RoomRentalSystem.Persistence.EntityConfigurations
 {
     public class BookingConfiguration : IEntityTypeConfiguration<Booking>
     {
+        private const int MaxRentalDays = 365;
+        private const int MinRentalDays = 1;
+        private const decimal MinTotalPrice = 1;
+
         public void Configure(EntityTypeBuilder<Booking> builder)
         {
             builder.HasKey(b => b.Id);
@@ -19,19 +22,28 @@ namespace RoomRentalSystem.Persistence.EntityConfigurations
 
             builder.Property(b => b.TotalPrice)
                 .IsRequired()
-                .HasColumnType("decimal(18,2)");
+                .HasColumnType("decimal(18,2)")
+                .HasAnnotation("MinValue", MinTotalPrice);
 
-            builder.Property(b => b.Status)
-                .IsRequired()
-                .HasConversion<string>()
-                .HasMaxLength(20)
-                .HasDefaultValue(RoomRentalStatus.Pending);
+            builder.HasOne(b => b.User)
+                .WithMany(u => u.Bookings)
+                .HasForeignKey(b => b.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasIndex(b => b.UserId);
-            builder.HasIndex(b => b.RoomId);
-            builder.HasIndex(b => b.StartDate);
-            builder.HasIndex(b => b.EndDate);
-            builder.HasIndex(b => b.Status);
+            builder.HasOne(b => b.Room)
+                .WithMany(r => r.Bookings)
+                .HasForeignKey(b => b.RoomId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.ToTable(b => b.HasCheckConstraint(
+                "CK_Booking_Dates",
+                $"[EndDate] > [StartDate] AND DATEDIFF(day, [StartDate], [EndDate]) <= {MaxRentalDays} AND DATEDIFF(day, [StartDate], [EndDate]) >= {MinRentalDays}"));
+
+            builder.ToTable(b => b.HasCheckConstraint(
+                "CK_Booking_TotalPrice",
+                $"[TotalPrice] >= {MinTotalPrice}"));
+
+            builder.ToTable("Bookings");
         }
     }
 }

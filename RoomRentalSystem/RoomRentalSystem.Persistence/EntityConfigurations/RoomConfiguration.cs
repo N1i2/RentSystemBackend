@@ -1,51 +1,71 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using RoomRentalSystem.Domain.Entities;
 
 namespace RoomRentalSystem.Persistence.EntityConfigurations
 {
     public class RoomConfiguration : IEntityTypeConfiguration<Room>
     {
+        private const int TitleMaxLength = 100;
+        private const int DescriptionMaxLength = 2000;
+        private const int AddressMaxLength = 200;
+        private const int AmenitiesMaxLength = 1000;
+        private const decimal MinPricePerDay = 1;
+        private const double MinArea = 1;
+        private const int MinRoomCount = 1;
+
         public void Configure(EntityTypeBuilder<Room> builder)
         {
             builder.HasKey(r => r.Id);
 
             builder.Property(r => r.Title)
                 .IsRequired()
-                .HasMaxLength(100);
+                .HasMaxLength(TitleMaxLength);
 
             builder.Property(r => r.PricePerDay)
                 .IsRequired()
-                .HasColumnType("decimal(18,2)");
+                .HasColumnType("decimal(18,2)")
+                .HasAnnotation("MinValue", MinPricePerDay);
 
             builder.Property(r => r.Description)
                 .IsRequired()
-                .HasMaxLength(2000);
+                .HasMaxLength(DescriptionMaxLength);
 
             builder.Property(r => r.Floor)
                 .IsRequired();
 
             builder.Property(r => r.Area)
-                .IsRequired();
+                .IsRequired()
+                .HasAnnotation("MinValue", MinArea);
 
             builder.Property(r => r.RoomCount)
-                .IsRequired();
-
-            builder.Property(r => r.Amenities)
-                .HasMaxLength(1000);
+                .IsRequired()
+                .HasAnnotation("MinValue", MinRoomCount);
 
             builder.Property(r => r.Address)
                 .IsRequired()
-                .HasMaxLength(500);
+                .HasMaxLength(AddressMaxLength);
 
-            builder.Property(r => r.IsActive)
+            builder.Property(r => r.Amenities)
+                .HasMaxLength(AmenitiesMaxLength);
+
+            builder.Property(r => r.Status)
                 .IsRequired()
-                .HasDefaultValue(true);
+                .HasConversion<string>();
+
+            builder.HasOne(r => r.User)
+                .WithMany(u => u.Rooms)
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(r => r.Image)
+                .WithOne()
+                .HasForeignKey<Room>(r => r.ImageId)
+                .OnDelete(DeleteBehavior.SetNull);
 
             builder.HasMany(r => r.Images)
                 .WithOne(i => i.Room)
-                .HasForeignKey(i => i.RoomId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .HasForeignKey(i => i.RoomId);
 
             builder.HasMany(r => r.Bookings)
                 .WithOne(b => b.Room)
@@ -55,7 +75,7 @@ namespace RoomRentalSystem.Persistence.EntityConfigurations
                 .WithOne(r => r.Room)
                 .HasForeignKey(r => r.RoomId);
 
-            builder.HasIndex(r => r.UserId);
+            builder.ToTable("Rooms");
         }
     }
 }

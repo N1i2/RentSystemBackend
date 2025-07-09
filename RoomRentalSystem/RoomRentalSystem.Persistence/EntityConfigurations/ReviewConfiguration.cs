@@ -6,6 +6,10 @@ namespace RoomRentalSystem.Persistence.EntityConfigurations
 {
     public class ReviewConfiguration : IEntityTypeConfiguration<Review>
     {
+        private const int CommentMaxLength = 2000;
+        private const int MinRating = 1;
+        private const int MaxRating = 5;
+
         public void Configure(EntityTypeBuilder<Review> builder)
         {
             builder.HasKey(r => r.Id);
@@ -15,18 +19,27 @@ namespace RoomRentalSystem.Persistence.EntityConfigurations
 
             builder.Property(r => r.Comment)
                 .IsRequired()
-                .HasMaxLength(2000);
+                .HasMaxLength(CommentMaxLength);
 
             builder.Property(r => r.CreatedAt)
                 .IsRequired()
-                .HasDefaultValueSql("NOW()");
+                .HasDefaultValueSql("GETDATE()");
 
-            builder.HasIndex(r => r.UserId);
-            builder.HasIndex(r => r.RoomId);
+            builder.HasOne(r => r.User)
+                .WithMany(u => u.Reviews)
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(r => r.Room)
+                .WithMany(r => r.Reviews)
+                .HasForeignKey(r => r.RoomId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.ToTable(b => b.HasCheckConstraint(
                 "CK_Review_Rating",
-                @"""Rating"" >= 1 AND ""Rating"" <= 5"));
+                $"[Rating] >= {MinRating} AND [Rating] <= {MaxRating}"));
+
+            builder.ToTable("Reviews");
         }
     }
 }

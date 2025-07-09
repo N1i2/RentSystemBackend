@@ -4,13 +4,16 @@ namespace RoomRentalSystem.Domain.Entities
 {
     public class Review : BaseEntity
     {
+        public int Rating { get; private set; }
+        public string Comment { get; private set; }
+        public DateTime CreatedAt { get; private set; }
         public Guid UserId { get; private set; }
         public User User { get; private set; }
         public Guid RoomId { get; private set; }
         public Room Room { get; private set; }
-        public int Rating { get; private set; }
-        public string Comment { get; private set; }
-        public DateTime CreatedAt { get; private set; }
+
+        private const int MaxRating = 5;
+        private const int MinRating = 1;
 
         private Review() { }
 
@@ -28,7 +31,7 @@ namespace RoomRentalSystem.Domain.Entities
             {
                 throw new DomainException(nameof(roomId));
             }
-            if (rating is < 1 or > 5)
+            if (rating is < MinRating or > MaxRating)
             {
                 throw new DomainException(nameof(rating));
             }

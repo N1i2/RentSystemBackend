@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RoomRentalSystem.Domain.Entities;
+using RoomRentalSystem.Persistence.DependencyInjection;
 using RoomRentalSystem.Persistence.Exceptions;
 
 namespace RoomRentalSystem.Persistence.Repositories
 {
-    public class RoleRepository(ConfigureDependencyInjection context) : Repository<Role>(context), IRoleRepository
+    public class RoleRepository(InfrastructureServiceRegistration context) : BaseRepository<Role>(context), IRoleRepository
     {
         public async Task<Role> GetByNameAsync(string name)
         {

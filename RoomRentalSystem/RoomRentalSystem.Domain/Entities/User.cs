@@ -9,15 +9,16 @@ namespace RoomRentalSystem.Domain.Entities
         public string PhoneNumber { get; private set; }
         public string Email { get; private set; }
         public string PasswordHash { get; private set; }
+        public Guid ImageId { get; private set; }
+        public Image Image { get; private set; }
         public ICollection<Role> Roles { get; private set; } = [];
         public ICollection<Room> Rooms { get; private set; } = [];
-        public ICollection<Room> FavoriteRooms { get; private set; } = [];
-        public ICollection<Room> Comparisons { get; private set; } = [];
+        public ICollection<Review> Reviews { get; private set; } = [];
         public ICollection<Booking> Bookings { get; private set; } = [];
 
         private User() { }
 
-        public static User Create(
+        public static User? Create(
             string phoneNumber,
             string email,
             string passwordHash,
@@ -35,7 +36,9 @@ namespace RoomRentalSystem.Domain.Entities
             {
                 throw new DomainException(nameof(passwordHash));
             }
-            if (roles.Count <= 0)
+
+            var rolesArray = roles ?? [];
+            if (!rolesArray.Any())
             {
                 throw new DomainException(nameof(roles));
             }
@@ -45,13 +48,13 @@ namespace RoomRentalSystem.Domain.Entities
                 PasswordHash = passwordHash,
                 PhoneNumber = phoneNumber,
                 Email = email,
-                Roles = roles
+                Roles = rolesArray
             };
         }
 
         private static bool IsValidEmail(string email) =>
-            !(string.IsNullOrWhiteSpace(email)) && (IsMatch(email, RegularExpressionsForValidation.EmailValidationPattern));
+            !string.IsNullOrWhiteSpace(email) && IsMatch(email, RegularExpressionsForValidation.EmailValidationPattern);
         private static bool IsValidPhoneNumber(string phoneNumber) =>
-            !(string.IsNullOrWhiteSpace(phoneNumber)) && (IsMatch(phoneNumber, RegularExpressionsForValidation.BelarusPhoneNumberValidationPattern));
+            !string.IsNullOrWhiteSpace(phoneNumber) && IsMatch(phoneNumber, RegularExpressionsForValidation.BelarusPhoneNumberValidationPattern);
     }
 }

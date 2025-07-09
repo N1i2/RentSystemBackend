@@ -1,5 +1,5 @@
 ﻿using Microsoft.OpenApi.Models;
-using RoomRentalSystem.Persistence;
+using RoomRentalSystem.Persistence.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 

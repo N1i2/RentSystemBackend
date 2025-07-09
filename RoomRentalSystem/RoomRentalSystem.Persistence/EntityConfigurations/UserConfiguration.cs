@@ -1,29 +1,44 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using RoomRentalSystem.Domain.Entities;
-using RoomRentalSystem.Domain.ValidationRules;
+using RoomRentalSystem.Persistence.Converters;
 
 namespace RoomRentalSystem.Persistence.EntityConfigurations
 {
     public class UserConfiguration : IEntityTypeConfiguration<User>
     {
+        private const int PhoneNumberMaxLength = 20;
+        private const int EmailMaxLength = 100;
+        private const int PasswordHashMaxLength = 256;
+
         public void Configure(EntityTypeBuilder<User> builder)
         {
             builder.HasKey(u => u.Id);
 
             builder.Property(u => u.PhoneNumber)
                 .IsRequired()
-                .HasMaxLength(20)
-                .HasAnnotation("RegularExpression", RegularExpressionsForValidation.BelarusPhoneNumberValidationPattern);
+                .HasMaxLength(PhoneNumberMaxLength)
+                .HasConversion<PhoneNumberConverter>()
+                .HasConversion(
+                    v => v,
+                    v => v.Trim());
 
             builder.Property(u => u.Email)
                 .IsRequired()
-                .HasMaxLength(100)
-                .HasAnnotation("RegularExpression", RegularExpressionsForValidation.EmailValidationPattern);
+                .HasMaxLength(EmailMaxLength)
+                .HasConversion<EmailConverter>()
+                .HasConversion(
+                    v => v,
+                    v => v.Trim().ToLower());
 
             builder.Property(u => u.PasswordHash)
                 .IsRequired()
-                .HasMaxLength(255);
+                .HasMaxLength(PasswordHashMaxLength);
+
+            builder.HasOne(u => u.Image)
+                .WithOne()
+                .HasForeignKey<User>(u => u.ImageId)
+                .OnDelete(DeleteBehavior.SetNull);
 
             builder.HasMany(u => u.Roles)
                 .WithMany(r => r.Users)
@@ -33,17 +48,11 @@ namespace RoomRentalSystem.Persistence.EntityConfigurations
                 .WithOne(r => r.User)
                 .HasForeignKey(r => r.UserId);
 
-            builder.HasMany(u => u.FavoriteRooms)
-                .WithMany()
-                .UsingEntity(j => j.ToTable("UserFavoriteRooms"));
-
-            builder.HasMany(u => u.Comparisons)
-                .WithMany()
-                .UsingEntity(j => j.ToTable("UserRoomComparisons"));
-
             builder.HasMany(u => u.Bookings)
                 .WithOne(b => b.User)
                 .HasForeignKey(b => b.UserId);
+
+            builder.ToTable("Users");
         }
     }
 }

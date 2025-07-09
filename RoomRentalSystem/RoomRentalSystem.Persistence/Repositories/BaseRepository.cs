@@ -2,24 +2,34 @@
 using Microsoft.EntityFrameworkCore;
 using RoomRentalSystem.Domain.Entities;
 using RoomRentalSystem.Domain.IRepositories;
+using RoomRentalSystem.Persistence.DependencyInjection;
 using RoomRentalSystem.Persistence.Exceptions;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace RoomRentalSystem.Persistence.Repositories
 {
-    public class Repository<T>(ConfigureDependencyInjection context) : IRepository<T> where T: BaseEntity
+    public class BaseRepository<T>(InfrastructureServiceRegistration context) : IRepository<T> where T: BaseEntity
     {
-        public readonly ConfigureDependencyInjection _context = context;
+        public readonly InfrastructureServiceRegistration _context = context;
         private readonly DbSet<T> _dbSet = context.Set<T>();
 
-        public async Task<T> GetByIdAsync(Guid id)
+        public async Task<T?> GetByIdAsync(Guid id)
         {
-            return await _dbSet.FindAsync(id)
-                ?? throw new PersistenceException($"{typeof(T).Name} with id = \'{id}\' not found");
+            return await _dbSet.FindAsync(id);
         }
 
-        public Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>> predicate = null)
+        public async Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>>? predicate = null)
         {
-            throw new NotImplementedException();
+            if (predicate != null)
+            {
+                IQueryable<T> query = _dbSet;
+
+                query = query.Where(predicate);
+
+                return await query.ToListAsync();
+            }
+
+            return await _dbSet.ToListAsync();
         }
 
         public async Task<IEnumerable<T>> GetAllAsync()

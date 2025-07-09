@@ -1,18 +1,20 @@
-﻿using RoomRentalSystem.Domain.Constants;
-using RoomRentalSystem.Domain.Exception;
+﻿using RoomRentalSystem.Domain.Exception;
 
 namespace RoomRentalSystem.Domain.Entities
 {
     public class Booking : BaseEntity
     {
+        public DateTime StartDate { get; private set; }
+        public DateTime EndDate { get; private set; }
+        public decimal TotalPrice { get; private set; }
         public Guid UserId { get; private set; }
         public User User { get; private set; }
         public Guid RoomId { get; private set; }
         public Room Room { get; private set; }
-        public DateTime StartDate { get; private set; }
-        public DateTime EndDate { get; private set; }
-        public decimal TotalPrice { get; private set; }
-        public RoomRentalStatus Status { get; private set; }
+
+        private const int MaxRentalDay = 365;
+        private const int MinRentalDay = 1;
+        private const decimal MinTotalPrice = 1;
 
         private Booking() { }
 
@@ -32,14 +34,14 @@ namespace RoomRentalSystem.Domain.Entities
             {
                 throw new DomainException(nameof(roomId));
             }
-            if ((startDate >= endDate) ||
-                ((endDate - startDate).TotalDays > 365) ||
-                (startDate.Date < DateTime.UtcNow.Date) ||
-                ((endDate - startDate).TotalDays <= 1))
+            if (startDate >= endDate ||
+                (endDate - startDate).TotalDays > MaxRentalDay ||
+                startDate.Date < DateTime.UtcNow.Date ||
+                (endDate - startDate).TotalDays <= MinRentalDay)
             {
                 throw new DomainException(nameof(startDate) + ' ' + nameof(endDate));
             }
-            if (totalPrice < 0)
+            if (totalPrice < MinTotalPrice)
             {
                 throw new DomainException(nameof(totalPrice));
             }
@@ -51,7 +53,6 @@ namespace RoomRentalSystem.Domain.Entities
                 StartDate = startDate,
                 EndDate = endDate,
                 TotalPrice = totalPrice,
-                Status = RoomRentalStatus.Pending
             };
         }
     }
