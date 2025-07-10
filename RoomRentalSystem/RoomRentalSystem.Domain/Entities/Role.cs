@@ -9,7 +9,7 @@ namespace RoomRentalSystem.Domain.Entities
 
         private Role() { }
 
-        public static Role Create(string name)
+        public static Role Create(Guid id, string name)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -18,6 +18,7 @@ namespace RoomRentalSystem.Domain.Entities
 
             return new Role
             {
+                Id = id,
                 Name = name
             };
         }

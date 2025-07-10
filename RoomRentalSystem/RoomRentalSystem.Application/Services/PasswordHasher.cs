@@ -2,7 +2,7 @@
 
 namespace RoomRentalSystem.Persistence.Repositories
 {
-    internal class PasswordHasher: IPasswordHasher
+    public class PasswordHasher: IPasswordHasher
     {
         public string HashPassword(string password)
         {

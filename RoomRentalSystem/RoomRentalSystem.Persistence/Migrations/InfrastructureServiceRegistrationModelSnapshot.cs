@@ -2,7 +2,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using RoomRentalSystem.Persistence.DependencyInjection;
@@ -12,11 +11,9 @@ using RoomRentalSystem.Persistence.DependencyInjection;
 namespace RoomRentalSystem.Persistence.Migrations
 {
     [DbContext(typeof(InfrastructureServiceRegistration))]
-    [Migration("20250630184102_InitialCreate")]
-    partial class InitialCreate
+    partial class InfrastructureServiceRegistrationModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -55,32 +52,58 @@ namespace RoomRentalSystem.Persistence.Migrations
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasDefaultValue("Pending");
-
                     b.Property<decimal>("TotalPrice")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18,2)")
+                        .HasAnnotation("MinValue", 1m);
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EndDate");
-
                     b.HasIndex("RoomId");
-
-                    b.HasIndex("StartDate");
-
-                    b.HasIndex("Status");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Bookings");
+                    b.ToTable("Bookings", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_Booking_Dates", "[EndDate] > [StartDate] AND DATEDIFF(day, [StartDate], [EndDate]) <= 365 AND DATEDIFF(day, [StartDate], [EndDate]) >= 1");
+
+                            t.HasCheckConstraint("CK_Booking_TotalPrice", "[TotalPrice] >= 1");
+                        });
+                });
+
+            modelBuilder.Entity("RoomRentalSystem.Domain.Entities.Image", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ImageData")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<Guid?>("RoomId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoomId");
+
+                    b.ToTable("Images", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_Image_Size", "DATALENGTH([ImageData]) <= 10485760");
+                        });
                 });
 
             modelBuilder.Entity("RoomRentalSystem.Domain.Entities.Review", b =>
@@ -97,7 +120,7 @@ namespace RoomRentalSystem.Persistence.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("NOW()");
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<int>("Rating")
                         .HasColumnType("integer");
@@ -114,9 +137,9 @@ namespace RoomRentalSystem.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Reviews", t =>
+                    b.ToTable("Reviews", null, t =>
                         {
-                            t.HasCheckConstraint("CK_Review_Rating", "\"Rating\" >= 1 AND \"Rating\" <= 5");
+                            t.HasCheckConstraint("CK_Review_Rating", "[Rating] >= 1 AND [Rating] <= 5");
                         });
                 });
 
@@ -133,7 +156,24 @@ namespace RoomRentalSystem.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("11111111-1111-1111-1111-111111111111"),
+                            Name = "Admin"
+                        },
+                        new
+                        {
+                            Id = new Guid("22222222-2222-2222-2222-222222222222"),
+                            Name = "Guest"
+                        },
+                        new
+                        {
+                            Id = new Guid("33333333-3333-3333-3333-333333333333"),
+                            Name = "Owner"
+                        });
                 });
 
             modelBuilder.Entity("RoomRentalSystem.Domain.Entities.Room", b =>
@@ -144,8 +184,8 @@ namespace RoomRentalSystem.Persistence.Migrations
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<string>("Amenities")
                         .IsRequired()
@@ -153,7 +193,8 @@ namespace RoomRentalSystem.Persistence.Migrations
                         .HasColumnType("character varying(1000)");
 
                     b.Property<double>("Area")
-                        .HasColumnType("double precision");
+                        .HasColumnType("double precision")
+                        .HasAnnotation("MinValue", 1.0);
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -163,16 +204,26 @@ namespace RoomRentalSystem.Persistence.Migrations
                     b.Property<int>("Floor")
                         .HasColumnType("integer");
 
+                    b.Property<Guid>("ImageId")
+                        .HasColumnType("uuid");
+
                     b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true);
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsFavorite")
+                        .HasColumnType("boolean");
 
                     b.Property<decimal>("PricePerDay")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18,2)")
+                        .HasAnnotation("MinValue", 1m);
 
                     b.Property<int>("RoomCount")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasAnnotation("MinValue", 1);
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -184,42 +235,12 @@ namespace RoomRentalSystem.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ImageId")
+                        .IsUnique();
+
                     b.HasIndex("UserId");
 
-                    b.ToTable("Rooms");
-                });
-
-            modelBuilder.Entity("RoomRentalSystem.Domain.Entities.RoomImage", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<bool>("IsMain")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
-
-                    b.Property<Guid>("RoomId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("SortOrder")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(0);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RoomId");
-
-                    b.HasIndex("RoomId", "IsMain");
-
-                    b.ToTable("RoomImages");
+                    b.ToTable("Rooms", (string)null);
                 });
 
             modelBuilder.Entity("RoomRentalSystem.Domain.Entities.User", b =>
@@ -231,53 +252,27 @@ namespace RoomRentalSystem.Persistence.Migrations
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasAnnotation("RegularExpression", "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<Guid?>("ImageId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasAnnotation("RegularExpression", "^\\+375\\s?(17|25|29|33|44)\\d{3}-?\\d{2}-?\\d{2}$");
+                        .HasColumnType("character varying(20)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
-                });
+                    b.HasIndex("ImageId")
+                        .IsUnique();
 
-            modelBuilder.Entity("RoomUser", b =>
-                {
-                    b.Property<Guid>("FavoriteRoomsId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("User1Id")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("FavoriteRoomsId", "User1Id");
-
-                    b.HasIndex("User1Id");
-
-                    b.ToTable("UserFavoriteRooms", (string)null);
-                });
-
-            modelBuilder.Entity("RoomUser1", b =>
-                {
-                    b.Property<Guid>("ComparisonsId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("User2Id")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("ComparisonsId", "User2Id");
-
-                    b.HasIndex("User2Id");
-
-                    b.ToTable("UserRoomComparisons", (string)null);
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("RoleUser", b =>
@@ -300,18 +295,25 @@ namespace RoomRentalSystem.Persistence.Migrations
                     b.HasOne("RoomRentalSystem.Domain.Entities.Room", "Room")
                         .WithMany("Bookings")
                         .HasForeignKey("RoomId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("RoomRentalSystem.Domain.Entities.User", "User")
                         .WithMany("Bookings")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Room");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("RoomRentalSystem.Domain.Entities.Image", b =>
+                {
+                    b.HasOne("RoomRentalSystem.Domain.Entities.Room", null)
+                        .WithMany("Images")
+                        .HasForeignKey("RoomId");
                 });
 
             modelBuilder.Entity("RoomRentalSystem.Domain.Entities.Review", b =>
@@ -323,9 +325,9 @@ namespace RoomRentalSystem.Persistence.Migrations
                         .IsRequired();
 
                     b.HasOne("RoomRentalSystem.Domain.Entities.User", "User")
-                        .WithMany()
+                        .WithMany("Reviews")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Room");
@@ -335,54 +337,31 @@ namespace RoomRentalSystem.Persistence.Migrations
 
             modelBuilder.Entity("RoomRentalSystem.Domain.Entities.Room", b =>
                 {
+                    b.HasOne("RoomRentalSystem.Domain.Entities.Image", "Image")
+                        .WithOne()
+                        .HasForeignKey("RoomRentalSystem.Domain.Entities.Room", "ImageId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .IsRequired();
+
                     b.HasOne("RoomRentalSystem.Domain.Entities.User", "User")
                         .WithMany("Rooms")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Image");
 
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("RoomRentalSystem.Domain.Entities.RoomImage", b =>
+            modelBuilder.Entity("RoomRentalSystem.Domain.Entities.User", b =>
                 {
-                    b.HasOne("RoomRentalSystem.Domain.Entities.Room", "Room")
-                        .WithMany("Images")
-                        .HasForeignKey("RoomId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("RoomRentalSystem.Domain.Entities.Image", "Image")
+                        .WithOne()
+                        .HasForeignKey("RoomRentalSystem.Domain.Entities.User", "ImageId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
-                    b.Navigation("Room");
-                });
-
-            modelBuilder.Entity("RoomUser", b =>
-                {
-                    b.HasOne("RoomRentalSystem.Domain.Entities.Room", null)
-                        .WithMany()
-                        .HasForeignKey("FavoriteRoomsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("RoomRentalSystem.Domain.Entities.User", null)
-                        .WithMany()
-                        .HasForeignKey("User1Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("RoomUser1", b =>
-                {
-                    b.HasOne("RoomRentalSystem.Domain.Entities.Room", null)
-                        .WithMany()
-                        .HasForeignKey("ComparisonsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("RoomRentalSystem.Domain.Entities.User", null)
-                        .WithMany()
-                        .HasForeignKey("User2Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Image");
                 });
 
             modelBuilder.Entity("RoomRentalSystem.Domain.Entities.Room", b =>
@@ -397,6 +376,8 @@ namespace RoomRentalSystem.Persistence.Migrations
             modelBuilder.Entity("RoomRentalSystem.Domain.Entities.User", b =>
                 {
                     b.Navigation("Bookings");
+
+                    b.Navigation("Reviews");
 
                     b.Navigation("Rooms");
                 });

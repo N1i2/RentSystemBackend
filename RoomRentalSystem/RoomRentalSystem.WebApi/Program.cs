@@ -9,6 +9,7 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 builder.Services.AddPersistenceServices(builder.Configuration.GetConnectionString("DefaultConnection"));
+builder.Services.AddApplicationServices();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -29,3 +30,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+

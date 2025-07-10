@@ -25,16 +25,6 @@ namespace RoomRentalSystem.Persistence.EntityConfigurations
                 .IsRequired()
                 .HasMaxLength(TypeMaxLength);
 
-            builder.HasOne(i => i.Room)
-                .WithMany(r => r.Images)
-                .HasForeignKey(i => i.RoomId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            builder.HasOne(i => i.User)
-                .WithOne(u => u.Image)
-                .HasForeignKey<Image>(i => i.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
-
             builder.ToTable(b => b.HasCheckConstraint(
                 "CK_Image_Size",
                 $"DATALENGTH([ImageData]) <= {MaxImageSize}"));

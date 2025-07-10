@@ -63,10 +63,6 @@ namespace RoomRentalSystem.Persistence.EntityConfigurations
                 .HasForeignKey<Room>(r => r.ImageId)
                 .OnDelete(DeleteBehavior.SetNull);
 
-            builder.HasMany(r => r.Images)
-                .WithOne(i => i.Room)
-                .HasForeignKey(i => i.RoomId);
-
             builder.HasMany(r => r.Bookings)
                 .WithOne(b => b.Room)
                 .HasForeignKey(b => b.RoomId);

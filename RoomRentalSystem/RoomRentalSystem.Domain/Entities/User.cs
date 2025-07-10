@@ -9,8 +9,8 @@ namespace RoomRentalSystem.Domain.Entities
         public string PhoneNumber { get; private set; }
         public string Email { get; private set; }
         public string PasswordHash { get; private set; }
-        public Guid ImageId { get; private set; }
-        public Image Image { get; private set; }
+        public Guid? ImageId { get; private set; }
+        public Image? Image { get; private set; }
         public ICollection<Role> Roles { get; private set; } = [];
         public ICollection<Room> Rooms { get; private set; } = [];
         public ICollection<Review> Reviews { get; private set; } = [];

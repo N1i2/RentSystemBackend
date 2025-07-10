@@ -7,7 +7,5 @@ namespace RoomRentalSystem.Application.Services.Interfaces
         Task<UserDto> GetUserByIdAsync(Guid id);
         Task<List<UserDto>> GetAllUsersAsync();
         Task<UserDto> CreateUserAsync(CreateUserDto userDto);
-        Task<UserDto> UpdateUserAsync(UserDto userDto);
-        Task DeleteUserAsync(Guid id);
     }
 }
