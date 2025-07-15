@@ -9,6 +9,7 @@ public class UsersController(IUserService userService) : ControllerBase
     public async Task<IActionResult> GetAllUsers()
     {
         var users = await userService.GetAllUsersAsync();
+
         return Ok(users);
     }
 
@@ -16,11 +17,6 @@ public class UsersController(IUserService userService) : ControllerBase
     public async Task<IActionResult> GetUserById(Guid id)
     {
         var user = await userService.GetUserByIdAsync(id);
-
-        if (user == null)
-        {
-            return NotFound();
-        }
 
         return Ok(user);
     }

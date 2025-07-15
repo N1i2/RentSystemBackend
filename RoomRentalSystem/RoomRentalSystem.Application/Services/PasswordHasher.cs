@@ -1,16 +1,15 @@
-﻿using RoomRentalSystem.Domain.IRepositories;
+﻿using RoomRentalSystem.Application.Services.Interfaces;
 
-namespace RoomRentalSystem.Persistence.Repositories
+namespace RoomRentalSystem.Application.Services;
+
+public class PasswordHasher : IPasswordHasher
 {
-    public class PasswordHasher: IPasswordHasher
+    public string HashPassword(string password) // TODO: salt
     {
-        public string HashPassword(string password)
-        {
-            return BCrypt.Net.BCrypt.HashPassword(password);
-        }
-        public bool VerifyPassword(string password, string hash)
-        {
-            return BCrypt.Net.BCrypt.Verify(password, hash);
-        }
+        return BCrypt.Net.BCrypt.HashPassword(password);
+    }
+    public bool VerifyPassword(string password, string hash)
+    {
+        return BCrypt.Net.BCrypt.Verify(password, hash);
     }
 }

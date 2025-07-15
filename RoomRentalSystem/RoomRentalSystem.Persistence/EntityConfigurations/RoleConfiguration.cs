@@ -2,28 +2,27 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using RoomRentalSystem.Domain.Entities;
 
-namespace RoomRentalSystem.Persistence.EntityConfigurations
+namespace RoomRentalSystem.Persistence.EntityConfigurations;
+
+public class RoleConfiguration : IEntityTypeConfiguration<RoleEntity>
 {
-    public class RoleConfiguration : IEntityTypeConfiguration<Role>
+    private const int NameMaxLength = 50;
+
+    public void Configure(EntityTypeBuilder<RoleEntity> builder)
     {
-        private const int NameMaxLength = 50;
+        builder.HasKey(r => r.Id);
 
-        public void Configure(EntityTypeBuilder<Role> builder)
-        {
-            builder.HasKey(r => r.Id);
+        builder.Property(r => r.Name)
+            .IsRequired()
+            .HasMaxLength(NameMaxLength)
+            .HasConversion(
+                v => v,
+                v => v.Trim());
 
-            builder.Property(r => r.Name)
-                .IsRequired()
-                .HasMaxLength(NameMaxLength)
-                .HasConversion(
-                    v => v,
-                    v => v.Trim());
+        builder.HasMany(r => r.Users)
+            .WithMany(u => u.Roles)
+            .UsingEntity(j => j.ToTable("UserRoles"));
 
-            builder.HasMany(r => r.Users)
-                .WithMany(u => u.Roles)
-                .UsingEntity(j => j.ToTable("UserRoles"));
-
-            builder.ToTable("Roles");
-        }
+        builder.ToTable("Roles");
     }
 }

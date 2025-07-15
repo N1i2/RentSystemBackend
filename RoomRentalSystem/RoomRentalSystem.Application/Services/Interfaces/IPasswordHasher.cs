@@ -1,8 +1,7 @@
-﻿namespace RoomRentalSystem.Domain.IRepositories
+﻿namespace RoomRentalSystem.Application.Services.Interfaces;
+
+public interface IPasswordHasher
 {
-    public interface IPasswordHasher
-    {
-        public string HashPassword(string password);
-        public bool VerifyPassword(string password, string hash);
-    }
+    public string HashPassword(string password);
+    public bool VerifyPassword(string password, string hash);
 }

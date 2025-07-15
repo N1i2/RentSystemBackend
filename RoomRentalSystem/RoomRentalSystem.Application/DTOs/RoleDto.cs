@@ -1,8 +1,7 @@
-﻿namespace RoomRentalSystem.Application.DTOs
+﻿namespace RoomRentalSystem.Application.DTOs;
+
+public record RoleDto
 {
-    public class RoleDto
-    {
-        public Guid Id { get; set; }
-        public string Name { get; set; }
-    }
+    public Guid Id { get; set; }
+    public string Name { get; set; }
 }

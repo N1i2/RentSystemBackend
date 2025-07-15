@@ -1,8 +1,9 @@
 ﻿using RoomRentalSystem.Domain.Entities;
-using RoomRentalSystem.Domain.IRepositories;
 
-public interface IRoleRepository : IRepository<Role>
+namespace RoomRentalSystem.Domain.IRepositories;
+
+public interface IRoleRepository : IRepository<RoleEntity>
 {
-    public Task<Role> GetByNameAsync(string name);
+    public Task<RoleEntity> GetByNameAsync(string name);
     public Task<bool> ExistsByNameAsync(string name);
 }

@@ -1,12 +1,11 @@
-﻿namespace RoomRentalSystem.Domain.Constants
+﻿namespace RoomRentalSystem.Domain.Constants;
+
+public enum RoomRentalStatus
 {
-    public enum RoomRentalStatus
-    {
-        Pending,
-        Confirmed,
-        Active,
-        CancelledByClient,
-        Rejected,
-        Completed,
-    }
+    Pending,
+    Confirmed,
+    Active,
+    CancelledByClient,
+    Rejected,
+    Completed,
 }

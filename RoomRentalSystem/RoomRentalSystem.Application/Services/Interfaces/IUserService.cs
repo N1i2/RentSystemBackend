@@ -1,11 +1,10 @@
 ﻿using RoomRentalSystem.Application.DTOs;
 
-namespace RoomRentalSystem.Application.Services.Interfaces
+namespace RoomRentalSystem.Application.Services.Interfaces;
+
+public interface IUserService
 {
-    public interface IUserService
-    {
-        Task<UserDto> GetUserByIdAsync(Guid id);
-        Task<List<UserDto>> GetAllUsersAsync();
-        Task<UserDto> CreateUserAsync(CreateUserDto userDto);
-    }
+    Task<UserDto> GetUserByIdAsync(Guid id);
+    Task<List<UserDto>> GetAllUsersAsync();
+    Task<UserDto> CreateUserAsync(CreateUserDto userDto);
 }

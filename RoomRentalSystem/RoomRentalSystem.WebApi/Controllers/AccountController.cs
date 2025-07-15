@@ -13,6 +13,6 @@ public class AccountController(IUserService userService) : ControllerBase
     {
         await userService.CreateUserAsync(dto);
 
-        return Ok("User created successfully");
+        return Ok();
     }
 }
