@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RoomRentalSystem.Domain.Constants;
 using RoomRentalSystem.Domain.Entities;
 
 namespace RoomRentalSystem.Persistence;
@@ -13,4 +12,12 @@ public class RoomRentalSystemDbContext(DbContextOptions<RoomRentalSystemDbContex
     public DbSet<ImageEntity> RoomImages { get; set; }
     public DbSet<BookingEntity> Bookings { get; set; }
     public DbSet<ReviewEntity> Reviews { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder); 
+
+        modelBuilder.Ignore<DateRangeEntity>();
+        modelBuilder.Ignore<ReviewScoreEntity>();
+    }
 }

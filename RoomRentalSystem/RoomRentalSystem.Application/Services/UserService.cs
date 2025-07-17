@@ -12,7 +12,7 @@ public class UserService(
     IUserRepository userRepository,
     IRoleRepository roleRepository,
     IPasswordHasher passwordHasher,
-    IJwtService jwtService) : IUserService
+    IAuthService jwtService) : IUserService
 {
     public async Task<UserDto> GetUserByIdAsync(Guid id)
     {
@@ -54,30 +54,5 @@ public class UserService(
 
         await userRepository.AddAsync(user);
         return user.Adapt<UserDto>();
-    }
-
-    public async Task<AuthResponseDto> LoginAsync(LoginDto dto)
-    {
-        var user = await userRepository.GetByEmailAsync(dto.Email);
-
-        if (!passwordHasher.VerifyPassword(dto.Password, user.PasswordHash))
-        {
-            throw new ApplicationException("Invalid credentials");
-        }
-
-        var claims = new List<Claim>
-        {
-            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new(ClaimTypes.Email, user.Email),
-            new(ClaimTypes.Role, string.Join(",", user.Roles.Select(r => r.Name)))
-        };
-
-        var token = jwtService.GenerateToken(claims);
-        var refreshToken = jwtService.GenerateRefreshToken();
-
-        // Здесь нужно сохранить refreshToken в базу для пользователя
-        // await SaveRefreshTokenAsync(user.Id, refreshToken);
-
-        return new AuthResponseDto { Token = token, RefreshToken = refreshToken };
     }
 }

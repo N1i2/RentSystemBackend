@@ -14,8 +14,14 @@ public class ReviewConfiguration : IEntityTypeConfiguration<ReviewEntity>
     {
         builder.HasKey(r => r.Id);
 
-        builder.Property(r => r.Score)
-            .IsRequired();
+        builder.OwnsOne(
+            r => r.Score,
+            scoreBuilder =>
+            {
+                scoreBuilder.Property(s => s.Value)
+                    .HasColumnName("Rating")  
+                    .IsRequired();
+            });
 
         builder.Property(r => r.Comment)
             .IsRequired()

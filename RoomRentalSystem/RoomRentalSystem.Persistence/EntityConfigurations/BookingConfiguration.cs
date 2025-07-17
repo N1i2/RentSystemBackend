@@ -14,11 +14,16 @@ public class BookingConfiguration : IEntityTypeConfiguration<BookingEntity>
     {
         builder.HasKey(b => b.Id);
 
-        builder.Property(b => b.StartDate)
-            .IsRequired();
+        builder.OwnsOne(b => b.BookingDate, dateBuilder =>
+        {
+            dateBuilder.Property(d => d.StartDate)
+                .HasColumnName("StartDate")
+                .IsRequired();
 
-        builder.Property(b => b.EndDate)
-            .IsRequired();
+            dateBuilder.Property(d => d.EndDate)
+                .HasColumnName("EndDate")
+                .IsRequired();
+        });
 
         builder.Property(b => b.TotalPrice)
             .IsRequired()
